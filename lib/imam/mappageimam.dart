@@ -1,9 +1,9 @@
+import 'package:firstproject/imam/myhomescreenimam.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:latlng_picker/latlng_picker.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:firstproject/imam/myhomescreenimam.dart'; // Import MyHomeScreenImam
 
 class ImamPage extends StatefulWidget {
   const ImamPage({
@@ -24,7 +24,8 @@ class ImamPage extends StatefulWidget {
 }
 
 class _ImamPageState extends State<ImamPage> {
-  late LatLng _selectedLocation = LatLng(36.4843, 2.8229);
+  late LatLng _selectedLocation =
+      LatLng(36.4689, 2.8283); // Coordonnées de Blida, Algérie
   late String _mosqueName = '';
   late String _mosqueDescription = '';
 
@@ -37,23 +38,50 @@ class _ImamPageState extends State<ImamPage> {
 
   Future<void> _saveMosque() async {
     if (_mosqueName.isNotEmpty && _mosqueDescription.isNotEmpty) {
-      await FirebaseFirestore.instance.collection("mosques").add({
-        "name": _mosqueName,
-        "description": _mosqueDescription,
-        "location":
-            GeoPoint(_selectedLocation.latitude, _selectedLocation.longitude),
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Mosque added successfully'),
-        ),
-      );
+      try {
+        // Récupérer l'utilisateur authentifié
+        User? currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser != null) {
+          String userId = currentUser.uid;
 
-      // Naviguer vers MyHomeScreenImam après l'enregistrement réussi
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MyHomeScreenImam()),
-      );
+          // Enregistrer les informations du mosque avec l'ID de l'utilisateur
+          await FirebaseFirestore.instance
+              .collection("mosques")
+              .doc(userId)
+              .set({
+            "name": _mosqueName,
+            "description": _mosqueDescription,
+            "location": GeoPoint(
+                _selectedLocation.latitude, _selectedLocation.longitude),
+            "idMosque":
+                userId, // Affecter l'ID de l'utilisateur au champ idMosque
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Mosque added successfully'),
+            ),
+          );
+
+          // Naviguer vers MyHomeScreenImam après l'enregistrement réussi
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MyHomeScreenImam()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: User not authenticated'),
+            ),
+          );
+        }
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $error'),
+          ),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
