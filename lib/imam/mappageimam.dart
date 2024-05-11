@@ -92,7 +92,12 @@ class _ImamPageState extends State<ImamPage> {
   }
 
   Future<void> _selectLocation() async {
-    final latLng = await showLatLngPickerDialog(context: context);
+   final latLng = await showLatLngPickerDialog(
+      context: context,
+      options: MapOptions(
+        initialCenter: LatLng(36.4689, 2.8283),
+      ),
+    );
     if (latLng != null && latLng.isNotEmpty) {
       setState(() {
         _selectedLocation = latLng.first;
