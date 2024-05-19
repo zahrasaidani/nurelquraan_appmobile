@@ -9,7 +9,7 @@ import 'package:firstproject/otp_verification_screen.dart';
 import 'package:firstproject/registrationform.dart';
 import 'package:firstproject/screens/MyHomeScreen.dart';
 import 'package:firstproject/screens/SettingsScreen.dart';
-import 'package:firstproject/screens/PublicationScreen.dart';
+import 'package:firstproject/screens/publicationscreen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firstproject/phoneauth.dart';
@@ -17,17 +17,14 @@ import 'homepage.dart'; // إضافة هذه الاستيرادات إذا لز�
 import 'otpscreen.dart';
 import 'phoneauth.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: kIsWeb
-        ? FirebaseOptions(
+    options: FirebaseOptions(
             apiKey: "AIzaSyD3yENJORbRRLXkkmBpTsrHg6uXf9oXzIE",
             appId: "1:134666020978:web:d86be34eda892d10b0baeb",
             messagingSenderId: "134666020978",
-            projectId: "first-project-72265",
-          )
-        : null,
+           projectId: "first-project-72265",)
   );
   runApp(MyApp());
 }
