@@ -9,7 +9,7 @@ import 'package:firstproject/otp_verification_screen.dart';
 import 'package:firstproject/registrationform.dart';
 import 'package:firstproject/screens/MyHomeScreen.dart';
 import 'package:firstproject/screens/SettingsScreen.dart';
-import 'package:firstproject/screens/publicationscreen.dart';
+import 'package:firstproject/screens/PublicationScreen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firstproject/phoneauth.dart';
