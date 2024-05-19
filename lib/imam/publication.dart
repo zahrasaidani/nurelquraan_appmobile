@@ -8,8 +8,16 @@ class MosequiPublicationsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Publications du Mosequi'),
+        title: Text('منشورات المسجد'),
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications),
+            onPressed: () {
+              // Action à effectuer lors du clic sur l'icône de notification
+            },
+          ),
+        ],
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
@@ -27,7 +35,7 @@ class MosequiPublicationsPage extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('Aucune publication trouvée.'));
+            return Center(child: Text('.لاتوجد منشورات للمسجد'));
           }
 
           return ListView(
@@ -95,7 +103,7 @@ class _AddPublicationPageState extends State<AddPublicationPage> {
         _contenuController.clear();
         Navigator.pop(context);
       } catch (e) {
-        print('Erreur lors de l\'ajout de la publication: $e');
+        print('خطا في اضافة منشور: $e');
       }
     } else {
       print('Aucun utilisateur authentifié.');
@@ -106,7 +114,7 @@ class _AddPublicationPageState extends State<AddPublicationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Nouvelle Publication'),
+        title: Text('منشور جديد'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -118,14 +126,14 @@ class _AddPublicationPageState extends State<AddPublicationPage> {
               controller: _contenuController,
               maxLines: 5,
               decoration: InputDecoration(
-                labelText: 'Contenu',
+                labelText: 'محتوى',
                 border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _submitPublication,
-              child: Text('Publier'),
+              child: Text('نشر'),
             ),
           ],
         ),
