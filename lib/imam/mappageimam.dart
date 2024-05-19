@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:latlng_picker/latlng_picker.dart';
 import 'package:latlong2/latlong.dart';
-
+import 'package:flutter_map/flutter_map.dart';
 class ImamPage extends StatefulWidget {
   const ImamPage({
     Key? key,
