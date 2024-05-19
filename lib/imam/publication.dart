@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_firestore_web/cloud_firestore_web.dart';
+import 'package:intl/intl.dart';
 
 class MosequiPublicationsPage extends StatelessWidget {
   @override
@@ -9,11 +9,13 @@ class MosequiPublicationsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Publications du Mosequi'),
+        automaticallyImplyLeading: false,
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('publications')
-            .where('mosequiId', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+            .where('mosequiId',
+                isEqualTo: FirebaseAuth.instance.currentUser?.uid)
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -24,15 +26,23 @@ class MosequiPublicationsPage extends StatelessWidget {
             return Center(child: Text('Erreur: ${snapshot.error}'));
           }
 
-          if (snapshot.hasData && snapshot.data!.docs.isEmpty) {
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(child: Text('Aucune publication trouvée.'));
           }
 
           return ListView(
             children: snapshot.data!.docs.map((doc) {
-              return ListTile(
-                title: Text(doc['contenu']),
-                // Ajoutez d'autres éléments de la publication si nécessaire
+              Timestamp timestamp = doc['timestamp'];
+              DateTime dateTime = timestamp.toDate();
+              String time = DateFormat('HH:mm').format(dateTime);
+
+              return Card(
+                elevation: 4,
+                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: ListTile(
+                  title: Text(doc['contenu']),
+                  subtitle: Text('Publié à $time'),
+                ),
               );
             }).toList(),
           );
@@ -46,6 +56,8 @@ class MosequiPublicationsPage extends StatelessWidget {
           );
         },
         child: Icon(Icons.add),
+        backgroundColor:
+            Color(0xFF9B9FD0), // Définir la couleur du bouton flottant en mauve
       ),
     );
   }
@@ -68,22 +80,20 @@ class _AddPublicationPageState extends State<AddPublicationPage> {
   void _submitPublication() async {
     String contenu = _contenuController.text;
 
-    // Récupérer l'utilisateur actuellement authentifié
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
       String mosequiId = user.uid;
 
       try {
-        // Créer une nouvelle publication avec l'ID du mosequi authentifié
         await FirebaseFirestore.instance.collection('publications').add({
           'mosequiId': mosequiId,
           'contenu': contenu,
-          'timestamp': FieldValue.serverTimestamp(), // Optionnel: pour garder une trace de l'heure de la publication
+          'timestamp': FieldValue.serverTimestamp(),
         });
 
-        // Réinitialiser le formulaire après la soumission
         _contenuController.clear();
+        Navigator.pop(context);
       } catch (e) {
         print('Erreur lors de l\'ajout de la publication: $e');
       }
@@ -103,10 +113,6 @@ class _AddPublicationPageState extends State<AddPublicationPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Vous êtes connecté en tant que : ${FirebaseAuth.instance.currentUser?.phoneNumber ?? "Anonyme"}',
-              style: TextStyle(fontSize: 16.0),
-            ),
             SizedBox(height: 16.0),
             TextField(
               controller: _contenuController,
@@ -127,4 +133,3 @@ class _AddPublicationPageState extends State<AddPublicationPage> {
     );
   }
 }
-
