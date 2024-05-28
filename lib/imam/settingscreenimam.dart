@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firstproject/imam/editprofil.dart';
+import 'package:firstproject/imam/modifierprofil.dart';
 import 'package:firstproject/imam/registerationformimam.dart';
 import 'package:flutter/material.dart';
 
