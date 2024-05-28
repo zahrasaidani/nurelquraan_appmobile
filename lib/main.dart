@@ -1,20 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firstproject/formulaire.dart';
-import 'package:firstproject/imam/myhomescreenimam.dart';
-import 'package:firstproject/imam/otpverificationimam.dart';
 import 'package:firstproject/imam/registerationformimam.dart';
-import 'package:firstproject/listemosques.dart';
-import 'package:firstproject/otp_verification_screen.dart';
-import 'package:firstproject/registrationform.dart';
-import 'package:firstproject/screens/MyHomeScreen.dart';
-import 'package:firstproject/screens/SettingsScreen.dart';
-import 'package:firstproject/screens/PublicationScreen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firstproject/phoneauth.dart';
-import 'homepage.dart';
-import 'otpscreen.dart';
 late String x;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
