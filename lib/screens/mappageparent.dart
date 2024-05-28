@@ -1,9 +1,9 @@
 /*import 'package:firstproject/screens/detailmosquepage.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Importation de Firestore pour la base de données
-import 'package:flutter_map/flutter_map.dart'; // Importation de Flutter Map pour afficher la carte
-import 'package:latlong2/latlong.dart'; // Importation des types de coordonnées
-import 'package:firstproject/imam/mappageimam.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore for the database
+import 'package:flutter_map/flutter_map.dart'; // Import Flutter Map to display the map
+import 'package:latlong2/latlong.dart'; // Import coordinate types
+
 class ParentPage extends StatefulWidget {
   const ParentPage({Key? key}) : super(key: key);
 
@@ -12,19 +12,20 @@ class ParentPage extends StatefulWidget {
 }
 
 class _ParentPageState extends State<ParentPage> {
-  late List<DocumentSnapshot> _mosques = []; // Liste des documents de la collection "mosques" dans Firestore
+  late List<DocumentSnapshot> _mosques =
+      []; // List of documents from the "mosques" collection in Firestore
 
   @override
   void initState() {
     super.initState();
-    _loadMosques(); // Chargement des mosquées au démarrage de la page
+    _loadMosques(); // Load mosques on page initialization
   }
 
-  // Fonction pour charger les mosquées depuis Firestore
+  // Function to load mosques from Firestore
   Future<void> _loadMosques() async {
     final dataQ = await FirebaseFirestore.instance.collection("mosques").get();
     setState(() {
-      _mosques = dataQ.docs; // Mise à jour de la liste des mosquées
+      _mosques = dataQ.docs; // Update the list of mosques
     });
   }
 
@@ -32,42 +33,58 @@ class _ParentPageState extends State<ParentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Parent Page'), // Titre de la page
+        title: Text('Parent Page'), // Page title
       ),
       body: FlutterMap(
         options: MapOptions(
-          initialCenter: LatLng(51.509364, -0.128928), // Centre initial de la carte
-          initialZoom: 9.2, // Zoom initial de la carte
+          center: LatLng(51.509364, -0.128928), // Initial center of the map
+          zoom: 9.2, // Initial zoom level of the map
         ),
         children: [
           TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', // URL du fond de carte OpenStreetMap
-            userAgentPackageName: 'com.example.app', // Nom du package utilisateur
+            urlTemplate:
+                'https://tile.openstreetmap.org/{z}/{x}/{y}.png', // URL for OpenStreetMap tiles
+            userAgentPackageName: 'com.example.app', // User agent package name
           ),
           MarkerLayer(
             markers: [
               for (var mosque in _mosques)
                 Marker(
                   point: LatLng(
-                    (mosque.data()!['location'] as GeoPoint).latitude, // Latitude de la mosquée
-                    (mosque.data()!['location'] as GeoPoint).longitude, // Longitude de la mosquée
+                    (mosque.data()!['location'] as GeoPoint)
+                        .latitude, // Mosque latitude
+                    (mosque.data()!['location'] as GeoPoint)
+                        .longitude, // Mosque longitude
                   ),
                   width: 80,
                   height: 80,
-                  child: IconButton(
-                    onPressed: () {
-                      // Action à effectuer lorsque l'utilisateur clique sur un marqueur
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MosqueDetailsPage(
-                            name: mosque.data()!['name'], // Nom de la mosquée
-                            description: mosque.data()!['description'], // Description de la mosquée
-                          ),
+                  builder: (ctx) => Column(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          // Action when the user clicks on a marker
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MosqueDetailsPage(
+                                name: mosque.data()!['name'], // Mosque name
+                                description: mosque.data()![
+                                    'description'], // Mosque description
+                              ),
+                            ),
+                          );
+                        },
+                        icon: Icon(Icons.location_on), // Location marker icon
+                      ),
+                      Text(
+                        mosque.data()!['name'], // Display mosque name
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
                         ),
-                      );
-                    },
-                    icon: Icon(Icons.location_on), // Icône de marqueur de localisation
+                      ),
+                    ],
                   ),
                 ),
             ],

@@ -1,9 +1,7 @@
-import 'package:firstproject/imam/mappageimam.dart';
-import 'package:firstproject/imam/otpverificationimam.dart';
 import 'package:firstproject/imam/myhomescreenimam.dart';
+import 'package:firstproject/imam/otpverificationimam.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// Import your home page
 
 class RegistrationFormImam extends StatefulWidget {
   const RegistrationFormImam({Key? key}) : super(key: key);
@@ -17,24 +15,22 @@ class _RegistrationFormState extends State<RegistrationFormImam> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _mosqueNameController = TextEditingController();
-
-  bool _isButtonPressed = false;
+  String? verificationId;
 
   @override
   void initState() {
     super.initState();
-    checkUserLoggedIn();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkUserLoggedIn();
+    });
   }
 
   void checkUserLoggedIn() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      // User is already authenticated, navigate to home page
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (context) =>
-                MyHomeScreenImam()), // Replace HomePage with your actual home page
+        MaterialPageRoute(builder: (context) => MyHomeScreenImam()), // Remplacez MyHomeScreenImam par votre écran d'accueil
       );
     }
   }
@@ -70,8 +66,7 @@ class _RegistrationFormState extends State<RegistrationFormImam> {
                         filled: true,
                         fillColor: Colors.white,
                         hintText: 'اسم المسجد',
-                        prefixIcon:
-                            Icon(Icons.account_balance, color: Colors.grey),
+                        prefixIcon: Icon(Icons.account_balance, color: Colors.grey),
                       ),
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -115,35 +110,23 @@ class _RegistrationFormState extends State<RegistrationFormImam> {
                     ),
                     const SizedBox(height: 20),
                     InkWell(
-                      onTap: _nextButtonPressed,
-                      onTapDown: (_) {
-                        setState(() {
-                          _isButtonPressed = true;
-                        });
-                      },
-                      onTapCancel: () {
-                        setState(() {
-                          _isButtonPressed = false;
-                        });
-                      },
-                      onTapUp: (_) {
-                        setState(() {
-                          _isButtonPressed = false;
-                        });
+                      onTap: () {
+                        if (_formKey.currentState!.validate()) {
+                          verifyPhoneNumber();
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         margin: const EdgeInsets.symmetric(horizontal: 25),
                         decoration: BoxDecoration(
-                          color: _isButtonPressed ? Colors.grey : Colors.white,
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             'التالي',
                             style: TextStyle(
-                              color:
-                                  _isButtonPressed ? Colors.white : Colors.grey,
+                              color: Colors.grey,
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                             ),
@@ -158,6 +141,44 @@ class _RegistrationFormState extends State<RegistrationFormImam> {
           ),
         ),
       ),
+    );
+  }
+
+  void verifyPhoneNumber() async {
+     String phoneNumber = '+213' + _phoneController.text.substring(1); // Ajoutez le code pays +213
+  await FirebaseAuth.instance.verifyPhoneNumber(
+    phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await FirebaseAuth.instance.signInWithCredential(credential);
+        // Si la vérification est automatique, naviguez vers l'écran d'accueil
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MyHomeScreenImam()),
+        );
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        if (e.code == 'invalid-phone-number') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Le numéro de téléphone est invalide.')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erreur de vérification : ${e.message}')),
+          );
+        }
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        this.verificationId = verificationId;
+        navigateToOtpScreen(
+          verificationId,
+          _phoneController.text,
+          _descriptionController.text,
+          _mosqueNameController.text,
+        );
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        this.verificationId = verificationId;
+      },
     );
   }
 
@@ -178,32 +199,5 @@ class _RegistrationFormState extends State<RegistrationFormImam> {
         ),
       ),
     );
-  }
-
-  void _nextButtonPressed() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: '+213${_phoneController.text.trim()}',
-        verificationCompleted: (PhoneAuthCredential credential) {
-          // Implement automatic login here
-        },
-        verificationFailed: (FirebaseAuthException ex) {
-          // Handle verification failure here
-        },
-        codeSent: (String verificationId, int? resendToken) async {
-          // Navigate to the OTP screen
-          navigateToOtpScreen(
-            verificationId,
-            _phoneController.text.trim(),
-            _descriptionController.text.trim(),
-            _mosqueNameController.text.trim(),
-          );
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          // Handle code retrieval timeout here
-        },
-      );
-    }
   }
 }

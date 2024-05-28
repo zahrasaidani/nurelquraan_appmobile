@@ -1,6 +1,4 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names, unused_import, unused_local_variable
-
-import 'dart:js_interop';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -8,8 +6,14 @@ import 'package:latlong2/latlong.dart';
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:latlng_picker/latlng_picker.dart";
 import 'package:firstproject/otpscreen.dart';
+
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required String phoneNumber, required String fullName, required String title}) : super(key: key);
+  const HomePage(
+      {Key? key,
+      required String phoneNumber,
+      required String fullName,
+      required String title})
+      : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
