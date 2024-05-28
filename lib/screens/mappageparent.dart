@@ -1,4 +1,4 @@
-/*import 'package:firstproject/screens/detailmosquepage.dart';
+import 'package:firstproject/screens/detailmosquepage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore for the database
 import 'package:flutter_map/flutter_map.dart'; // Import Flutter Map to display the map
@@ -36,7 +36,7 @@ class _ParentPageState extends State<ParentPage> {
         title: Text('Parent Page'), // Page title
       ),
       body: FlutterMap(
-        options: MapOptions(
+        options: const MapOptions(
           center: LatLng(51.509364, -0.128928), // Initial center of the map
           zoom: 9.2, // Initial zoom level of the map
         ),
@@ -50,34 +50,35 @@ class _ParentPageState extends State<ParentPage> {
             markers: [
               for (var mosque in _mosques)
                 Marker(
+                  child:Icon(Icons.location_history) ,
                   point: LatLng(
-                    (mosque.data()!['location'] as GeoPoint)
+                    (mosque['location'] as GeoPoint)
                         .latitude, // Mosque latitude
-                    (mosque.data()!['location'] as GeoPoint)
+                    (mosque['location'] as GeoPoint)
                         .longitude, // Mosque longitude
                   ),
                   width: 80,
                   height: 80,
-                  builder: (ctx) => Column(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          // Action when the user clicks on a marker
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MosqueDetailsPage(
-                                name: mosque.data()!['name'], // Mosque name
-                                description: mosque.data()![
-                                    'description'], // Mosque description
-                              ),
-                            ),
-                          );
-                        },
-                        icon: Icon(Icons.location_on), // Location marker icon
+                  // child: (ctx) => Column(
+                  //   children: [
+                  //     IconButton(
+                  //       onPressed: () {
+                  //         // Action when the user clicks on a marker
+                  //         Navigator.push(
+                  //           context,
+                  //           MaterialPageRoute(
+                  //             builder: (context) => MosqueDetailsPage(
+                  //               name: mosque.data()!['name'], // Mosque name
+                  //               description: mosque.data()![
+                  //                   'description'], // Mosque description
+                  //             ),
+                  //           ),
+                  //         );
+                  //       },
+                        // icon: Icon(Icons.location_on), // Location marker icon
                       ),
                       Text(
-                        mosque.data()!['name'], // Display mosque name
+                        mosque['name'], // Display mosque name
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.black,
@@ -93,4 +94,4 @@ class _ParentPageState extends State<ParentPage> {
       ),
     );
   }
-}*/
+}

@@ -69,7 +69,7 @@ class PublicationScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ChildProfileScreen()),
+                        builder: (context) => ChildProfileScreen(childData: {},)),
                   );
                 },
               );
