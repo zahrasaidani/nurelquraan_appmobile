@@ -1,11 +1,8 @@
-// ignore_for_file: deprecated_member_use, unused_import
-
 import 'package:firstproject/imam/mappageimam.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firstproject/imam/myhomescreenimam.dart';
-import 'package:flutter/services.dart'; // Import your existing home screen
-// Import the new page to store data
+import 'package:flutter/services.dart';
+
 
 class OtpVerificationScreenImam extends StatelessWidget {
   final String verificationId;
@@ -38,20 +35,27 @@ class OtpVerificationScreenImam extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 30),
-            _buildVerificationCodeSection(),
-            const SizedBox(height: 15),
-            _buildCodeInputFields(context),
-            const SizedBox(height: 20),
-            _buildActionButtons(context),
-            const SizedBox(height: 10),
-            _buildResendCodeText(),
-            const Spacer(),
-          ],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 30),
+                _buildVerificationCodeSection(),
+                const SizedBox(height: 15),
+                _buildCodeInputFields(context),
+                const SizedBox(height: 20),
+                _buildActionButtons(context),
+                const SizedBox(height: 10),
+                _buildResendCodeText(context),
+                const SizedBox(height: 30),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -60,10 +64,10 @@ class OtpVerificationScreenImam extends StatelessWidget {
   Widget _buildVerificationCodeSection() {
     return Container(
       padding: const EdgeInsets.all(10),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "تحقق من رمز OTP",
             style: TextStyle(
               color: Colors.black,
@@ -71,7 +75,7 @@ class OtpVerificationScreenImam extends StatelessWidget {
               fontSize: 23,
             ),
           ),
-          Text(
+          const Text(
             "لقد أرسلنا رسالة نصية قصيرة برمز تفعيل إلى هاتفك",
             style: TextStyle(
               fontWeight: FontWeight.normal,
@@ -81,8 +85,8 @@ class OtpVerificationScreenImam extends StatelessWidget {
           Row(
             children: [
               Text(
-                "+213*******21",
-                style: TextStyle(
+                phoneNumber,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -110,37 +114,42 @@ class OtpVerificationScreenImam extends StatelessWidget {
 
   Widget _buildOTPTextField(
       BuildContext context, TextEditingController controller) {
-    return SizedBox(
-      height: 68,
-      width: 64,
-      child: TextField(
-        controller: controller,
-        onChanged: (value) {
-          if (value.length == 1) {
-            FocusScope.of(context).nextFocus();
-          }
-        },
-        style: Theme.of(context).textTheme.headline6!,
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        inputFormatters: [
-          LengthLimitingTextInputFormatter(1),
-          FilteringTextInputFormatter.digitsOnly,
-        ],
-        decoration: InputDecoration(
-          hintText: "0",
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(
-              color: Color.fromARGB(255, 155, 159, 208),
-              width: 2,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(
-              color: Color.fromARGB(255, 155, 159, 208),
-              width: 2,
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: SizedBox(
+          height: 68,
+          width: 64,
+          child: TextField(
+            controller: controller,
+            onChanged: (value) {
+              if (value.length == 1) {
+                FocusScope.of(context).nextFocus();
+              }
+            },
+            style: Theme.of(context).textTheme.headline6!,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(1),
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+            decoration: InputDecoration(
+              hintText: "0",
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 155, 159, 208),
+                  width: 2,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 155, 159, 208),
+                  width: 2,
+                ),
+              ),
             ),
           ),
         ),
@@ -148,26 +157,31 @@ class OtpVerificationScreenImam extends StatelessWidget {
     );
   }
 
-  Widget _buildResendCodeText() {
-    return RichText(
-      text: const TextSpan(
-        style: TextStyle(
-          fontSize: 16,
-          color: Color.fromARGB(255, 155, 159, 208),
-        ),
-        children: <TextSpan>[
-          TextSpan(
-            text: "لم تتلقَ الرمز؟ ",
-            style: TextStyle(color: Colors.black),
+  Widget _buildResendCodeText(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Resend the OTP code logic here
+      },
+      child: RichText(
+        text: const TextSpan(
+          style: TextStyle(
+            fontSize: 16,
+            color: Color.fromARGB(255, 155, 159, 208),
           ),
-          TextSpan(
-            text: "إعادة الإرسال",
-            style: TextStyle(
-              color: Color.fromARGB(255, 155, 159, 208),
-              fontWeight: FontWeight.bold,
+          children: <TextSpan>[
+            TextSpan(
+              text: "لم تتلقَ الرمز؟ ",
+              style: TextStyle(color: Colors.black),
             ),
-          ),
-        ],
+            TextSpan(
+              text: "إعادة الإرسال",
+              style: TextStyle(
+                color: Color.fromARGB(255, 155, 159, 208),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -197,11 +211,10 @@ class OtpVerificationScreenImam extends StatelessWidget {
 
               _navigateToStoreDataPage(context, userCredential.user!);
             } catch (ex) {
-              print(ex.toString());
-              // Handle error
+              _showErrorDialog(context, ex.toString());
             }
           } else {
-            // Handle error
+            _showErrorDialog(context, 'يرجى ملء جميع الحقول');
           }
         },
         child: const Text(
@@ -222,12 +235,12 @@ class OtpVerificationScreenImam extends StatelessWidget {
   }
 
   String _getOtp() {
-    return otpController1.text.toString() +
-        otpController2.text.toString() +
-        otpController3.text.toString() +
-        otpController4.text.toString() +
-        otpController5.text.toString() +
-        otpController6.text.toString();
+    return otpController1.text +
+        otpController2.text +
+        otpController3.text +
+        otpController4.text +
+        otpController5.text +
+        otpController6.text;
   }
 
   void _navigateToStoreDataPage(BuildContext context, User user) {
@@ -235,11 +248,32 @@ class OtpVerificationScreenImam extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => ImamPage(
-            description: description,
-            mosqueName: mosqueName,
-            phoneNumber: phoneNumber,
-            user: user),
+          description: description,
+          mosqueName: mosqueName,
+          phoneNumber: phoneNumber,
+          user: user,
+        ),
       ),
+    );
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('خطأ'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('حسناً'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
