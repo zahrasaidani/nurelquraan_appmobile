@@ -2,9 +2,10 @@ import 'package:firstproject/imam/myhomescreenimam.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:latlng_picker/latlng_picker.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:flutter_map/flutter_map.dart';
+
 class ImamPage extends StatefulWidget {
   const ImamPage({
     Key? key,
@@ -53,8 +54,7 @@ class _ImamPageState extends State<ImamPage> {
             "description": _mosqueDescription,
             "location": GeoPoint(
                 _selectedLocation.latitude, _selectedLocation.longitude),
-            "idMosque":
-                userId, // Affecter l'ID de l'utilisateur au champ idMosque
+            "idMosque": userId, 
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -92,7 +92,7 @@ class _ImamPageState extends State<ImamPage> {
   }
 
   Future<void> _selectLocation() async {
-   final latLng = await showLatLngPickerDialog(
+    final latLng = await showLatLngPickerDialog(
       context: context,
       options: MapOptions(
         initialCenter: LatLng(36.4689, 2.8283),
@@ -109,7 +109,10 @@ class _ImamPageState extends State<ImamPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Imam Page'),
+        title: Text('حدد موقعك'),
+        automaticallyImplyLeading: false,
+        
+     
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -129,14 +132,14 @@ class _ImamPageState extends State<ImamPage> {
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: _selectLocation,
-              child: Text('Select Location'),
+              child: Text('Sélectionner l\'emplacement'),
             ),
             SizedBox(height: 16),
-            Text('Selected Location: $_selectedLocation'),
+            Text('Emplacement sélectionné : $_selectedLocation'),
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: _saveMosque,
-              child: Text('Save Mosque'),
+              child: Text('Enregistrer'),
             ),
           ],
         ),
@@ -144,3 +147,4 @@ class _ImamPageState extends State<ImamPage> {
     );
   }
 }
+ 
