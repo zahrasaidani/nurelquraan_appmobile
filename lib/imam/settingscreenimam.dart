@@ -1,106 +1,113 @@
-import 'package:firstproject/imam/myhomescreenimam.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firstproject/imam/modifierprofil.dart';
+import 'package:firstproject/imam/registerationformimam.dart';
+import 'package:flutter/material.dart';
 
-class SettingsScreenImam extends StatefulWidget {
-  const SettingsScreenImam({super.key});
 
+class SettingsScreen extends StatefulWidget {
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreenImam> {
-  bool _notificationsEnabled = true;
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool _notificationsEnabled =
+      true; // Déclaration unique pour _notificationsEnabled
+
   String _selectedLanguage = 'العربية'; // Langue par défaut
-  String mosqueName = ''; // Nom de la mosquée
+  String _parentFullName = ''; // Nom complet du parent
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
+    _fetchParentFullName();
   }
 
-  Future<void> _loadUserData() async {
-    try {
-      // Récupérer l'utilisateur actuellement connecté
-      User? user = FirebaseAuth.instance.currentUser;
-
-      // Vérifier si l'utilisateur est connecté
-      if (user != null) {
-        // Récupérer les données de l'utilisateur depuis Firestore
-        DocumentSnapshot userData = await FirebaseFirestore.instance
-            .collection('Mosques')
-            .doc(user.uid)
-            .get();
-
-        // Vérifier si les données existent dans Firestore
-        if (userData.exists) {
-          // Récupérer le nom de la mosquée associé à l'utilisateur
+  Future<void> _fetchParentFullName() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('parents')
+          .doc(user.uid)
+          .get()
+          .then((DocumentSnapshot documentSnapshot) {
+        if (documentSnapshot.exists) {
           setState(() {
-            mosqueName = userData['name'] ??
-                ''; // Utiliser le nom de la mosquée ou une chaîne vide si non trouvé
+            // Utilisation de la méthode .get() pour obtenir la donnée de type Map<String, dynamic>
+            Map<String, dynamic> data =
+                documentSnapshot.data() as Map<String, dynamic>;
+            _parentFullName = data['fullName'] ?? '';
           });
+        } else {
+          print('User does not exist');
         }
-      }
+      });
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => RegistrationFormImam()),
+      );
     } catch (e) {
-      print('Erreur lors du chargement des données utilisateur: $e');
+      print('Erreur lors de la déconnexion: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Row(
-          children: [
-            Icon(Icons.account_circle, size: 50), // Icone d'homme
-            SizedBox(width: 10), // Espacement entre l'icône et le texte
-          ],
-        ),
-      ),
+   
       body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-        children: [
-          SwitchListTile(
-            value: _notificationsEnabled,
-            onChanged: (value) {
-              setState(() {
-                _notificationsEnabled = value;
-              });
+        children: <Widget>[
+          ListTile(
+            leading: Icon(Icons.edit),
+            title: Text('تعديل الملف الشخصي'),
+            onTap: () async {
+             await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EditUserInfoPage()),
+              );
+              await _fetchParentFullName();
+              setState(() {});
             },
-            title: const Text('تفعيل الإشعارات '),
+          ),
+          SwitchListTile(
+            title: Text('تفعيل الإشعارات '),
+            value: true, // La valeur actuelle de l'option de notification
+            onChanged: (bool value) {
+              // Mettre à jour la valeur de l'option de notification
+            },
+            secondary: Icon(Icons.notifications_active),
           ),
           ListTile(
-            leading: const Icon(Icons.language),
-            title: const Text('اللغة'),
-            trailing: DropdownButton<String>(
-              value: _selectedLanguage,
-              items: <String>['العربية', 'English']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedLanguage = newValue!;
-                });
-              },
-            ),
+            leading: Icon(Icons.language),
+            title: Text('Langue'),
+            onTap: () {
+              // Naviguer vers la page de sélection de la langue
+            },
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text('تسجيل الخروج'),
-            onTap: () async {
-              await FirebaseAuth.instance.signOut();
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MyHomeScreenImam()),
-              );
-            },
+            onTap: _handleLogout,
           ),
+      /* ListTile(
+  leading: Icon(Icons.report_problem), // Icône "exit_to_app" en rouge
+  title: Text('ابلاغ عن مشكل'), // Titre du ListTile
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProblemReportPage()), // Redirige vers la page de signalement de problème
+    );
+  },
+)*/
+
+          
+          
         ],
       ),
     );
