@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firstproject/formulaire.dart';
 import 'package:firstproject/imam/myhomescreenimam.dart';
 import 'package:firstproject/imam/otpverificationimam.dart';
@@ -14,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:firstproject/phoneauth.dart';
 import 'homepage.dart';
 import 'otpscreen.dart';
-
+late String x;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -24,6 +25,12 @@ void main() async {
     messagingSenderId: "134666020978",
     projectId: "first-project-72265",
   ));
+  await firebaseApi().init();
+final fr = FirebaseMessaging.instance;
+    final fmct = await fr.getToken();
+    x=fmct!;
+    print('Token $fmct');
+    
   runApp(MyApp());
 }
 
@@ -66,22 +73,59 @@ class GreetingScreen extends StatelessWidget {
   }
 }
 
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       builder: (context, child) {
+//         return Directionality(
+//           textDirection: TextDirection.rtl,
+//           child: child ?? Container(),
+//         );
+//       },
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//         visualDensity: VisualDensity.adaptivePlatformDensity,
+//       ),
+//       home: GreetingScreen(),
+//     );
+//   }
+// }
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      builder: (context, child) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: child ?? Container(),
-        );
-      },
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Flutter Widget Example'),
+        ),
+        body: Center(
+          child: TitleWidget(title: x),
+        ),
       ),
-      home: GreetingScreen(),
     );
+  }
+}
+
+class TitleWidget extends StatelessWidget {
+  final String title;
+
+  TitleWidget({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: TextStyle(fontSize: 24),
+    );
+  }
+}
+class firebaseApi {
+  final fr = FirebaseMessaging.instance;
+  Future<void> init() async {
+    final fmct = await fr.getToken();
+    print('Token $fmct');
   }
 }
